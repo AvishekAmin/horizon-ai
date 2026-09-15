@@ -15,6 +15,18 @@ Engineered with an authentic, sleek **ChatGPT dark aesthetic** (`#212121` canvas
 
 ---
 
+## 📷 Screenshots
+
+### 💬 1. New Chat & Starter Prompts
+
+![Horizon AI - New Chat & Starter Prompts](Screenshots/new-chat.png)
+
+### ⚡ 2. Conversational Stream & Code Syntax Highlighting
+
+![Horizon AI - Conversational Stream & Code Highlight](Screenshots/show-chat.png)
+
+---
+
 ## 🎯 Architectural Pillars
 
 1. **Multi-Model Resilience & Automatic Failover**: Requests are dispatched through Google's `@google/genai` Interactions API prioritizing `gemini-3.8-flash`. If free-tier RPM/RPD quota boundaries are encountered, the backend automatically fails over to `gemini-3.6-flash` without interrupting user interaction.
@@ -89,7 +101,7 @@ Horizon AI separates client presentation and streaming animation from backend or
 |  - GET    /api/health            (System availability check)                                       |
 |  - GET    /api/thread            (Retrieve all conversation threads sorted by updatedAt: -1)       |
 |  - GET    /api/thread/:threadId  (Retrieve full message turn array for active thread)              |
-|  - DELETE /api/thread/:threadId  (Delete thread and purge associated messages)                      |
+|  - DELETE /api/thread/:threadId  (Delete thread and purge associated messages)                     |
 |  - POST   /api/chat              (Input validation -> History Context -> Gemini -> DB Commit)      |
 |                                                                                                    |
 |  [Service & Orchestration Layer]                                                                   |
@@ -139,7 +151,7 @@ Horizon AI separates client presentation and streaming animation from backend or
 
 ### 🔒 6. Security & Sanitization
 - **Strict API Key Isolation**: The `GEMINI_API_KEY` is confined strictly to the backend environment and is never delivered to client-side code.
-- **Comprehensive Git Hygiene**: `.gitignore` is hardened with `*.env`, `.env.*`, `backend/.env`, and `Frontend/.env` rules to prevent secret leaks.
+- **Comprehensive Git Hygiene**: `.gitignore` is hardened with `*.env`, `.env.*`, `Backend/.env`, and `Frontend/.env` rules to prevent secret leaks.
 - **Input Sanitization**: Rejects whitespace-only submissions and validates payload types before triggering AI pipelines.
 
 ---
@@ -202,7 +214,7 @@ User (Browser)                     Express Backend                    Google Gem
 ```text
 horizon-ai/
 │
-├── backend/
+├── Backend/
 │   ├── models/
 │   │   └── Thread.js            # Mongoose schema for conversations & message subdocuments
 │   ├── routes/
@@ -229,6 +241,10 @@ horizon-ai/
 │   ├── package.json
 │   ├── package-lock.json
 │   └── vite.config.js           # Vite build bundler configuration
+│
+├── Screenshots/
+│   ├── new-chat.png             # Initial state with suggestion prompt cards
+│   └── show-chat.png            # Multi-turn conversation with code syntax formatting
 │
 ├── .gitignore                   # Multi-tier secret & artifact exclusion rules
 └── README.md                    # Platform documentation
@@ -339,7 +355,7 @@ DELETE /api/thread/:threadId
 
 ## 🔑 Environment Configuration
 
-### Backend Configuration (`backend/.env`)
+### Backend Configuration (`Backend/.env`)
 
 ```env
 # Server Port (Defaults to 8080)
@@ -374,9 +390,9 @@ cd horizon-ai
 ---
 
 ### Step 2: Backend Setup
-Open your terminal and navigate to the backend directory:
+Open your terminal and navigate to the Backend directory:
 ```bash
-cd backend
+cd Backend
 
 # Install dependencies
 npm install
