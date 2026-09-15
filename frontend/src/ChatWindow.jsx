@@ -234,7 +234,8 @@ function ChatWindow() {
         </div>
 
         <p className="disclaimer-text">
-          Horizon AI can make mistakes. Verify important information. Powered by Google Gemini.
+          Horizon AI can make mistakes. Verify important information. Powered by
+          Google Gemini.
         </p>
       </footer>
     </main>

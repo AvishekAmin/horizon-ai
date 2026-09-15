@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useContext, useEffect, useRef, useState, useCallback } from "react";
+import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { MyContext } from "./MyContext.jsx";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -63,14 +63,13 @@ function TypewriterMessage({ content, isNew, onProgress, onFinish }) {
 
   useEffect(() => {
     if (!isNew) {
-      setDisplayedText(content);
-      setIsDone(true);
       return;
     }
 
     let currentIndex = 0;
     const totalLength = content.length;
-    const step = totalLength > 800 ? 4 : totalLength > 400 ? 3 : totalLength > 150 ? 2 : 1;
+    const step =
+      totalLength > 800 ? 4 : totalLength > 400 ? 3 : totalLength > 150 ? 2 : 1;
     const intervalTime = totalLength > 800 ? 10 : 15;
 
     const interval = setInterval(() => {
@@ -205,7 +204,10 @@ function Chat() {
           <div className="message-row assistant-row loading-row">
             <div className="message-wrapper">
               <div className="message-avatar">
-                <div className="avatar-assistant pulse-avatar" title="Horizon AI">
+                <div
+                  className="avatar-assistant pulse-avatar"
+                  title="Horizon AI"
+                >
                   <i className="fa-solid fa-bolt-lightning"></i>
                 </div>
               </div>

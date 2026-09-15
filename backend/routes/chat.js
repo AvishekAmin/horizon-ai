@@ -4,9 +4,6 @@ import getGeminiAPIResponse from "../utils/gemini.js";
 
 const router = express.Router();
 
-/**
- * Health check / ping
- */
 router.get("/health", (req, res) => {
   return res.status(200).json({
     status: "ok",
@@ -15,26 +12,22 @@ router.get("/health", (req, res) => {
   });
 });
 
-/**
- * Get all conversation threads
- */
 router.get("/thread", async (req, res) => {
   try {
     const threads = await Thread.find(
       {},
-      { threadId: 1, title: 1, createdAt: 1, updatedAt: 1 }
+      { threadId: 1, title: 1, createdAt: 1, updatedAt: 1 },
     ).sort({ updatedAt: -1 });
 
     return res.status(200).json(threads);
   } catch (err) {
     console.error("Error fetching threads:", err);
-    return res.status(500).json({ error: "Failed to fetch conversation history" });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch conversation history" });
   }
 });
 
-/**
- * Get all messages for a specific thread
- */
 router.get("/thread/:threadId", async (req, res) => {
   const { threadId } = req.params;
 
@@ -48,13 +41,12 @@ router.get("/thread/:threadId", async (req, res) => {
     return res.status(200).json(thread.messages);
   } catch (err) {
     console.error(`Error fetching thread ${threadId}:`, err);
-    return res.status(500).json({ error: "Failed to fetch conversation messages" });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch conversation messages" });
   }
 });
 
-/**
- * Delete a specific conversation thread
- */
 router.delete("/thread/:threadId", async (req, res) => {
   const { threadId } = req.params;
 
@@ -62,7 +54,9 @@ router.delete("/thread/:threadId", async (req, res) => {
     const deletedThread = await Thread.findOneAndDelete({ threadId });
 
     if (!deletedThread) {
-      return res.status(404).json({ error: "Thread not found or already deleted" });
+      return res
+        .status(404)
+        .json({ error: "Thread not found or already deleted" });
     }
 
     return res.status(200).json({
@@ -72,13 +66,12 @@ router.delete("/thread/:threadId", async (req, res) => {
     });
   } catch (err) {
     console.error(`Error deleting thread ${threadId}:`, err);
-    return res.status(500).json({ error: "Failed to delete conversation thread" });
+    return res
+      .status(500)
+      .json({ error: "Failed to delete conversation thread" });
   }
 });
 
-/**
- * Send a message and get a response from Horizon AI (Gemini 3.8 Flash)
- */
 router.post("/chat", async (req, res) => {
   const { threadId, message } = req.body;
 
@@ -97,7 +90,6 @@ router.post("/chat", async (req, res) => {
     let historyContext = [];
 
     if (!thread) {
-      // Create concise title from first message
       const generatedTitle =
         cleanMessage.length > 35
           ? `${cleanMessage.slice(0, 35)}...`
@@ -109,7 +101,6 @@ router.post("/chat", async (req, res) => {
         messages: [{ role: "user", content: cleanMessage }],
       });
     } else {
-      // Collect prior conversation context before appending current turn
       historyContext = thread.messages.map((m) => ({
         role: m.role,
         content: m.content,
@@ -118,10 +109,11 @@ router.post("/chat", async (req, res) => {
       thread.messages.push({ role: "user", content: cleanMessage });
     }
 
-    // Call Gemini with user prompt and context
-    const assistantReply = await getGeminiAPIResponse(cleanMessage, historyContext);
+    const assistantReply = await getGeminiAPIResponse(
+      cleanMessage,
+      historyContext,
+    );
 
-    // Save assistant reply
     thread.messages.push({ role: "assistant", content: assistantReply });
     thread.updatedAt = new Date();
     await thread.save();

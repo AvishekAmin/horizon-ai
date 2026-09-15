@@ -7,11 +7,9 @@ import chatRoutes from "./routes/chat.js";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
 app.use(express.json({ limit: "5mb" }));
 app.use(cors());
 
-// Root & Health check
 app.get("/", (req, res) => {
   res.json({
     message: "Horizon AI — Conversational AI Platform API",
@@ -20,14 +18,14 @@ app.get("/", (req, res) => {
   });
 });
 
-// API Routes
 app.use("/api", chatRoutes);
 
-// Database Connection
 const connectDB = async () => {
   const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.warn("WARNING: Neither MONGO_URI nor MONGODB_URI is set in backend/.env!");
+    console.warn(
+      "WARNING: Neither MONGO_URI nor MONGODB_URI is set in Backend/.env!",
+    );
     return;
   }
 

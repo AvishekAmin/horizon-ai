@@ -16,7 +16,6 @@ function Sidebar() {
 
   return (
     <>
-      {/* Mobile backdrop overlay */}
       {sidebarOpen && (
         <div
           className="sidebar-backdrop"
@@ -25,7 +24,6 @@ function Sidebar() {
       )}
 
       <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
-        {/* Top Header & Brand */}
         <div className="sidebar-header">
           <div className="brand-badge">
             <div className="brand-icon">
@@ -37,7 +35,6 @@ function Sidebar() {
             </div>
           </div>
 
-          {/* Close button for mobile */}
           <button
             className="mobile-close-btn"
             onClick={() => setSidebarOpen(false)}
@@ -47,7 +44,6 @@ function Sidebar() {
           </button>
         </div>
 
-        {/* New Chat Button (ChatGPT style) */}
         <div className="new-chat-container">
           <button
             className="new-chat-btn"
@@ -62,7 +58,6 @@ function Sidebar() {
           </button>
         </div>
 
-        {/* Conversation History List */}
         <div className="history-section">
           <div className="history-header">
             <span>Recent Conversations</span>
@@ -107,7 +102,6 @@ function Sidebar() {
           </ul>
         </div>
 
-        {/* Sidebar Footer / User & Model Info */}
         <div className="sidebar-footer">
           <div className="user-profile-badge">
             <div className="user-avatar">

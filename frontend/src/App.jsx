@@ -5,7 +5,9 @@ import { MyContext } from "./MyContext.jsx";
 import { useState, useEffect, useCallback } from "react";
 import { v1 as uuidv1 } from "uuid";
 
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_BACKEND_URL
+  ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/+$/, "")}/api`
+  : "https://horizon-ai-avishek-backend.onrender.com/api";
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -35,8 +37,29 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getAllThreads();
-  }, [getAllThreads]);
+    let isMounted = true;
+    const loadThreadsOnMount = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/thread`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (isMounted && Array.isArray(data)) {
+          setAllThreads(data);
+        }
+      } catch (err) {
+        console.warn(
+          "Could not fetch conversation history on mount:",
+          err.message,
+        );
+      }
+    };
+
+    loadThreadsOnMount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const createNewChat = useCallback(() => {
     setNewChat(true);
@@ -49,49 +72,55 @@ function App() {
     setSidebarOpen(false);
   }, []);
 
-  const changeThread = useCallback(async (newThreadId) => {
-    if (!newThreadId || newThreadId === currThreadId && !newChat) return;
+  const changeThread = useCallback(
+    async (newThreadId) => {
+      if (!newThreadId || (newThreadId === currThreadId && !newChat)) return;
 
-    setCurrThreadId(newThreadId);
-    setError(null);
-    setIsQuotaError(false);
-    setSidebarOpen(false);
+      setCurrThreadId(newThreadId);
+      setError(null);
+      setIsQuotaError(false);
+      setSidebarOpen(false);
 
-    try {
-      const response = await fetch(`${API_BASE}/thread/${newThreadId}`);
-      if (!response.ok) {
-        throw new Error(`Thread not found`);
+      try {
+        const response = await fetch(`${API_BASE}/thread/${newThreadId}`);
+        if (!response.ok) {
+          throw new Error(`Thread not found`);
+        }
+        const data = await response.json();
+        setPrevChats(Array.isArray(data) ? data : []);
+        setNewChat(false);
+        setReply(null);
+      } catch (err) {
+        console.error("Error changing thread:", err);
+        setError("Unable to load the selected conversation.");
       }
-      const data = await response.json();
-      setPrevChats(Array.isArray(data) ? data : []);
-      setNewChat(false);
-      setReply(null);
-    } catch (err) {
-      console.error("Error changing thread:", err);
-      setError("Unable to load the selected conversation.");
-    }
-  }, [currThreadId, newChat]);
+    },
+    [currThreadId, newChat],
+  );
 
-  const deleteThread = useCallback(async (threadId) => {
-    try {
-      const response = await fetch(`${API_BASE}/thread/${threadId}`, {
-        method: "DELETE",
-      });
+  const deleteThread = useCallback(
+    async (threadId) => {
+      try {
+        const response = await fetch(`${API_BASE}/thread/${threadId}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete conversation");
+        if (!response.ok) {
+          throw new Error("Failed to delete conversation");
+        }
+
+        setAllThreads((prev) => prev.filter((t) => t.threadId !== threadId));
+
+        if (threadId === currThreadId) {
+          createNewChat();
+        }
+      } catch (err) {
+        console.error("Error deleting thread:", err);
+        setError("Failed to delete conversation thread.");
       }
-
-      setAllThreads((prev) => prev.filter((t) => t.threadId !== threadId));
-
-      if (threadId === currThreadId) {
-        createNewChat();
-      }
-    } catch (err) {
-      console.error("Error deleting thread:", err);
-      setError("Failed to delete conversation thread.");
-    }
-  }, [currThreadId, createNewChat]);
+    },
+    [currThreadId, createNewChat],
+  );
 
   const sendMessage = useCallback(
     async (textToSend) => {
@@ -174,7 +203,7 @@ function App() {
         setLoading(false);
       }
     },
-    [prompt, loading, currThreadId, getAllThreads]
+    [prompt, loading, currThreadId, getAllThreads],
   );
 
   const providerValues = {
