@@ -1,13 +1,47 @@
+import express from "express";
 import "dotenv/config";
-import { GoogleGenAI } from "@google/genai";
+import cors from "cors";
+import mongoose from "mongoose";
+import chatRoutes from "./routes/chat.js";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+// Middleware
+app.use(express.json({ limit: "5mb" }));
+app.use(cors());
+
+// Root & Health check
+app.get("/", (req, res) => {
+  res.json({
+    message: "Horizon AI — Conversational AI Platform API",
+    status: "running",
+    version: "1.0.0",
+  });
 });
 
-const interaction = await ai.interactions.create({
-  model: "gemini-3.8-flash",
-  input: "Explain how AI works in a few words",
+// API Routes
+app.use("/api", chatRoutes);
+
+// Database Connection
+const connectDB = async () => {
+  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+  if (!mongoUri) {
+    console.warn("WARNING: Neither MONGO_URI nor MONGODB_URI is set in backend/.env!");
+    return;
+  }
+
+  try {
+    await mongoose.connect(mongoUri);
+    console.log("Successfully connected to MongoDB Database!");
+  } catch (err) {
+    console.error("Failed to connect to MongoDB Database:", err.message);
+  }
+};
+
+app.listen(PORT, () => {
+  console.log(`Horizon AI Backend running on port ${PORT}`);
+  connectDB();
 });
 
-console.log(interaction.output_text);
+export default app;
