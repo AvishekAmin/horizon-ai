@@ -452,7 +452,7 @@ curl -X GET http://localhost:8080/api/thread
 ## 👨‍💻 Author
 
 **Avishek Amin**  
-Full-Stack Developer & Software Engineer
+Full-Stack Developer & Machine Learning Engineer
 
 - 🔗 **LinkedIn:** [linkedin.com/in/avishekamin](https://www.linkedin.com/in/avishekamin)
 - 🔗 **GitHub:** [github.com/AvishekAmin](https://github.com/AvishekAmin)
@@ -460,6 +460,6 @@ Full-Stack Developer & Software Engineer
 
 ---
 
-### ⭐ If you find this project valuable, consider giving it a star!
+### ⭐ If you find this project valuable or interesting, consider giving it a star!
 
 ---
